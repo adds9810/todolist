@@ -14,8 +14,6 @@
 
 import { todo, todoFun } from '../app.js';
 import assert from 'assert';
-import jsdom from 'mocha-jsdom';
-global.document = jsdom({ url: 'http://localhost' });
 
 describe('App test!', function () {
   it('todo should return "complete"', function () {
