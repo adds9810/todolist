@@ -10,8 +10,8 @@ const App = {
         this.todoArea = document.querySelector('.list-group');
     },
     initEvent() {
-        this.btn.addEventListener('click', this.createTodo);
-        this.inputArea.addEventListener('keyup', this.keyup);
+        this.btn.addEventListener('click', this.createTodo.bind(this));
+        this.inputArea.addEventListener('keyup', this.keyup.bind(this));
     },
     keyup() {
         if (window.event.keyCode == 13) {
