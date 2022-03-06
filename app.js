@@ -1,3 +1,32 @@
+
+// es6, ts 객체지향 클래시 기반 코드
+class App {
+  constructor() {
+    this.todoList = [];
+    this.selectorCache();
+    this.initEvent();
+  }
+}
+const app = new App();
+
+function FnApp() {
+  this.todoList = [];
+  this.selectorCache();
+  this.initEvent();
+
+  this.selectorCache = () => {
+    this.btn = document.getElementById('button-addon2');
+    this.inputArea = document.getElementById('todoTxt');
+    this.todoArea = document.querySelector('.list-group');
+    this.AlldelBtn = document.getElementById('button-addon3');
+  }
+}
+const fnApp = new FnApp();
+fnApp.todoList = [1,2,3,4];
+fnApp.selectorCache();
+
+
+// 객체지향 오브젝트
 const App = {
   init() {
     this.todoList = [];
@@ -28,22 +57,49 @@ const App = {
   onDraw() {
     let todoHtml = '';
     for (let i = 0; i < this.todoList.length; i++) {
-      todoHtml += `<div class="row">
-      <label class="list-group-item d-flex gap-2 col-sm-8">
-        <input class="form-check-input flex-shrink-0" type="checkbox" value="" checked>
-           ${i}.
-        <small class="d-block text-muted">${this.todoList[i]}</small>
-      </label>
-      <div class="col-sm-4 " style="padding: 0.5rem 1rem;">
-      <button type="button" class="btn btn-secondary" id="delBtn${i}" data-list="${i}">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x" viewBox="0 0 16 16">
-          <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/>
-        </svg>
-    </button>
+      todoHtml += DivRow(this, i);
+    }
+
+    function DivRow(self, i) {
+      return `<div class="row">
+      ${Label(self, i)}
+      ${Div()}
+      ${Button()}
       </div>
      </div>
        `;
     }
+
+    function Div() {
+      return `
+        <div class="col-sm-4 " style="padding: 0.5rem 1rem;">
+      `
+    }
+
+    const listGroupItem = `
+    list-group-item d-flex gap-2 col-sm-8
+    `;
+
+    function Label(self, i) {
+      return `
+      <label class=${listGroupItem}>
+        <input class="form-check-input flex-shrink-0" type="checkbox" value="" checked>
+           ${i}.
+        <small class="d-block text-muted">${self.todoList[i]}</small>
+      </label>
+      `
+    }
+
+    function Button() {
+      return `
+           <button type="button" class="btn btn-secondary" id="delBtn${i}" data-list="${i}">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x" viewBox="0 0 16 16">
+          <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/>
+        </svg>
+    </button>
+      `;
+    }
+
     this.todoArea.innerHTML = todoHtml;
     for (let i = 0; i < this.todoList.length; i++) {
       document
