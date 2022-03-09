@@ -38,7 +38,7 @@ const App = {
   },
   setData(data) {
     if (data == '') {
-      alert('할일을 등록해 주세요!');
+      alert('할 일을 등록해 주세요!');
       return false;
     } else {
       this.todoList.push({ title: data, complete: false });
@@ -95,7 +95,7 @@ const App = {
     if (this.todoList.length == 0) {
       alert('삭제할 할 일이 없습니다.');
     } else {
-      let alldelConfirm = confirm('모든 할일을 삭제하시겠습니까?');
+      let alldelConfirm = confirm('모든 할 일을 삭제하시겠습니까?');
       if (alldelConfirm == true) {
         let num = 'All';
         this.delTodo(num);
@@ -107,11 +107,14 @@ const App = {
   checkTodo() {
     let eElm = event.currentTarget;
     let editlNum = eElm.parentNode.parentNode.dataset.list;
-    let clickTodo = this.todoList[editlNum]['complete'];
-    if (eElm.checked != clickTodo) {
-      // 2차 배열의 완료여부 false로 혹은 true로 변경되도록 수정이 필요
+    let dataTxt = this.todoList[editlNum]['title'];
+    let datakTodo = this.todoList[editlNum]['complete'];
+    if (eElm.checked != datakTodo) {
+      this.todoList.splice(editlNum, 1, {
+        title: dataTxt,
+        complete: eElm.checked,
+      });
     }
-    console.log(clickTodo);
     //console.log(eElm.checked);
   },
   editTodo() {
