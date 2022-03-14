@@ -1,3 +1,5 @@
+import MESSAGES from '/messages.js';
+
 const App = {
   init() {
     this.todoList = [];
@@ -8,12 +10,12 @@ const App = {
     this.btn = document.getElementById('button-addon2');
     this.inputArea = document.getElementById('todoTxt');
     this.todoArea = document.querySelector('.list-group');
-    this.AlldelBtn = document.getElementById('button-addon3');
+    this.allDelBtn = document.getElementById('button-addon3');
   },
   initEvent() {
     this.btn.addEventListener('click', this.createTodo.bind(this));
     this.inputArea.addEventListener('keyup', this.keyup.bind(this));
-    this.AlldelBtn.addEventListener('click', this.allDelete.bind(this));
+    this.allDelBtn.addEventListener('click', this.adeleteAll.bind(this));
   },
   addEvent(i) {
     document
@@ -27,23 +29,24 @@ const App = {
       .addEventListener('click', this.delTodo.bind(this));
   },
   keyup() {
-    if (window.event.keyCode == 13) {
+    let chkEnterKey = window.event.keyCode == 13;
+    if (chkEnterKey) {
       this.createTodo();
     }
   },
   createTodo() {
     let todoTxt = this.inputArea.value;
     this.setData(todoTxt);
-    return 'todo complete';
+    return MESSAGES[0];
   },
   setData(data) {
     if (data == '') {
-      alert('할 일을 등록해 주세요!');
+      alert(MESSAGES[1]);
       return false;
     } else {
       this.todoList.push({ title: data, complete: false });
       this.onDraw();
-      return 'todoFun setData complete';
+      return MESSAGES[2];
     }
   },
   onDraw() {
@@ -55,7 +58,7 @@ const App = {
     for (let i = 0; i < this.todoList.length; i++) {
       this.addEvent(i);
     }
-    return 'todoFun getData complete';
+    return MESSAGES[3];
   },
   todoTemplete(i) {
     return `<div class="row" data-list="${i}">
@@ -91,12 +94,12 @@ const App = {
     </svg>
 </button>`;
   },
-  allDelete() {
+  adeleteAll() {
     if (this.todoList.length == 0) {
-      alert('삭제할 할 일이 없습니다.');
+      alert(MESSAGES[4]);
     } else {
-      let alldelConfirm = confirm('모든 할 일을 삭제하시겠습니까?');
-      if (alldelConfirm == true) {
+      let allDelConfirm = confirm(MESSAGES[5]);
+      if (allDelConfirm == true) {
         let num = 'All';
         this.delTodo(num);
       } else {
@@ -109,7 +112,8 @@ const App = {
     let editlNum = eElm.parentNode.parentNode.dataset.list;
     let dataTxt = this.todoList[editlNum]['title'];
     let datakTodo = this.todoList[editlNum]['complete'];
-    if (eElm.checked != datakTodo) {
+    let chkValData = eElm.checked != datakTodo;
+    if (chkValData) {
       this.todoList.splice(editlNum, 1, {
         title: dataTxt,
         complete: eElm.checked,
@@ -128,7 +132,7 @@ const App = {
       this.todoList.length = 0;
     } else {
       // 클릭한 것만 삭제
-      let delConfirm = confirm('정말로 삭제하시겠습니까?');
+      let delConfirm = confirm(MESSAGES[6]);
       if (delConfirm == true) {
         let eElm = event.currentTarget;
         delNum = eElm.parentNode.parentNode.dataset.list;
