@@ -23,10 +23,9 @@ const App = {
     this.btn.addEventListener('click', this.createTodo.bind(this));
     this.inputArea.addEventListener('keyup', this.keyup.bind(this));
     this.allDelBtn.addEventListener('click', this.deleteAll.bind(this));
-    this.todoArea.addEventListener('click', this.listEvent.bind(this));
-    //this.todoArea.addEventListener('click', this.editTodo.bind(this));
+    this.todoArea.addEventListener('click', this.listOptionEvent.bind(this));
   },
-  listEvent() {
+  listOptionEvent() {
     let eElm = event.target;
     let eElmIcon = eElm.parentNode;
     let clickTarget =
