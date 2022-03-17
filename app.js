@@ -13,24 +13,38 @@ const App = {
     this.todoArea = document.querySelector('.list-group');
     this.allDelBtn = document.getElementById('button-addon3');
   },
+  listData(data, chkVal) {
+    return {
+      title: data,
+      complete: chkVal,
+    };
+  },
   initEvent() {
     this.btn.addEventListener('click', this.createTodo.bind(this));
     this.inputArea.addEventListener('keyup', this.keyup.bind(this));
-    this.allDelBtn.addEventListener('click', this.adeleteAll.bind(this));
+    this.allDelBtn.addEventListener('click', this.deleteAll.bind(this));
+    this.todoArea.addEventListener('click', this.listEvent.bind(this));
+    //this.todoArea.addEventListener('click', this.editTodo.bind(this));
   },
-  addEvent(i) {
-    document
-      .getElementById(`todoVal${i}`)
-      .addEventListener('click', this.checkTodo.bind(this));
-    document
-      .getElementById(`editBtn${i}`)
-      .addEventListener('click', this.editTodo.bind(this));
-    document
-      .getElementById(`delBtn${i}`)
-      .addEventListener('click', this.delTodo.bind(this));
-  },
-  listData(data, chkVal) {
-    return { title: data, complete: chkVal };
+  listEvent() {
+    let eElm = event.target;
+    let eElmIcon = eElm.parentNode;
+    let clickTarget =
+      eElm.classList.contains('form-check-input') ||
+      eElm.classList.contains('btn')
+        ? eElm
+        : eElmIcon;
+    let clickEditBtn = clickTarget.classList.contains('btn-edit');
+    let clickDelBtn = clickTarget.classList.contains('btn-delete');
+    let clickChk = eElm.classList.contains('form-check-input');
+    let targetNum = clickTarget.parentNode.parentNode.dataset.list;
+    if (clickEditBtn) {
+      this.editTodo(targetNum);
+    } else if (clickDelBtn) {
+      this.delTodo(targetNum);
+    } else if (clickChk) {
+      this.checkTodo(targetNum, eElm.checked);
+    }
   },
   keyup() {
     let chkEnterKey = window.event.keyCode == 13;
@@ -48,7 +62,7 @@ const App = {
       alert(MESSAGES[1]);
       return false;
     } else {
-      this.todoList.push(listData(data, 'false'));
+      this.todoList.push(this.listData(data, 'false'));
       this.onDraw();
       return MESSAGES[2];
     }
@@ -59,9 +73,6 @@ const App = {
       todoHtml += this.todoTemplete(i);
     }
     this.todoArea.innerHTML = todoHtml;
-    for (let i = 0; i < this.todoList.length; i++) {
-      this.addEvent(i);
-    }
     return MESSAGES[3];
   },
   todoTemplete(i) {
@@ -78,27 +89,23 @@ const App = {
     <small class="pt-1 form-checked-content">${i}. ${this.todoList[i]['title']}</small>
   </label>`;
   },
-  todoOptionBtn(i) {
+  todoOptionBtn() {
     return `<div class="col-sm-4 " style="padding: 0.5rem 1rem;">
-    ${this.todoEditBtn(i)}
-    ${this.todoDelBtn(i)}
+    ${this.todoEditbtn()}
+    ${this.todoDelBtn()}
   </div>`;
   },
-  todoEditBtn(i) {
-    return `<button type="button" class="btn btn-secondary" id="editBtn${i}" >
-      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pen" viewBox="0 0 16 16">
-        <path d="m13.498.795.149-.149a1.207 1.207 0 1 1 1.707 1.708l-.149.148a1.5 1.5 0 0 1-.059 2.059L4.854 14.854a.5.5 0 0 1-.233.131l-4 1a.5.5 0 0 1-.606-.606l1-4a.5.5 0 0 1 .131-.232l9.642-9.642a.5.5 0 0 0-.642.056L6.854 4.854a.5.5 0 1 1-.708-.708L9.44.854A1.5 1.5 0 0 1 11.5.796a1.5 1.5 0 0 1 1.998-.001zm-.644.766a.5.5 0 0 0-.707 0L1.95 11.756l-.764 3.057 3.057-.764L14.44 3.854a.5.5 0 0 0 0-.708l-1.585-1.585z"/>
-      </svg>
+  todoEditbtn() {
+    return `<button type="button" class="btn btn-secondary btn-edit">
+      <i class="bi bi-pen"></i>
     </button>`;
   },
-  todoDelBtn(i) {
-    return `<button type="button" class="btn btn-secondary" id="delBtn${i}" >
-    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x" viewBox="0 0 16 16">
-      <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/>
-    </svg>
-</button>`;
+  todoDelBtn() {
+    return `<button type="button" class="btn btn-secondary btn-delete" >
+        <i class="bi bi-x"></i>
+    </button>`;
   },
-  adeleteAll() {
+  deleteAll() {
     if (this.todoList.length == 0) {
       alert(MESSAGES[4]);
     } else {
@@ -111,25 +118,23 @@ const App = {
       }
     }
   },
-  checkTodo() {
-    let eElm = event.currentTarget;
-    let editlNum = eElm.parentNode.parentNode.dataset.list;
+  checkTodo(num, value) {
+    let chkVal = value;
+    let editlNum = num;
     let dataTxt = this.todoList[editlNum]['title'];
     let datakTodo = this.todoList[editlNum]['complete'];
-    let chkValData = eElm.checked != datakTodo;
+    let chkValData = chkVal != datakTodo;
     if (chkValData) {
-      this.todoList.splice(editlNum, currIdx, {
-        title: dataTxt,
-        complete: eElm.checked,
-      });
+      this.todoList.splice(editlNum, currIdx, this.listData(dataTxt, chkVal));
     }
     //console.log(eElm.checked);
   },
-  editTodo() {
-    let eElm = event.currentTarget;
-    let editlNum = eElm.parentNode.parentNode.dataset.list;
+  editTodo(num) {
+    let editNum = num;
+    console.log(`${editNum}번째 수정버튼 입니다.`);
   },
   delTodo(num) {
+    console.log('delect');
     let delNum = num;
     if (delNum == 'All') {
       //전체삭제
@@ -138,8 +143,6 @@ const App = {
       // 클릭한 것만 삭제
       let delConfirm = confirm(MESSAGES[6]);
       if (delConfirm == true) {
-        let eElm = event.currentTarget;
-        delNum = eElm.parentNode.parentNode.dataset.list;
         this.todoList.splice(delNum, currIdx);
       } else {
         return false;
