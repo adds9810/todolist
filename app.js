@@ -1,4 +1,5 @@
 import MESSAGES from '/messages.js';
+const currIdx = 1;
 
 const App = {
   init() {
@@ -28,6 +29,9 @@ const App = {
       .getElementById(`delBtn${i}`)
       .addEventListener('click', this.delTodo.bind(this));
   },
+  listData(data, chkVal) {
+    return { title: data, complete: chkVal };
+  },
   keyup() {
     let chkEnterKey = window.event.keyCode == 13;
     if (chkEnterKey) {
@@ -44,7 +48,7 @@ const App = {
       alert(MESSAGES[1]);
       return false;
     } else {
-      this.todoList.push({ title: data, complete: false });
+      this.todoList.push(listData(data, 'false'));
       this.onDraw();
       return MESSAGES[2];
     }
@@ -114,7 +118,7 @@ const App = {
     let datakTodo = this.todoList[editlNum]['complete'];
     let chkValData = eElm.checked != datakTodo;
     if (chkValData) {
-      this.todoList.splice(editlNum, 1, {
+      this.todoList.splice(editlNum, currIdx, {
         title: dataTxt,
         complete: eElm.checked,
       });
@@ -136,7 +140,7 @@ const App = {
       if (delConfirm == true) {
         let eElm = event.currentTarget;
         delNum = eElm.parentNode.parentNode.dataset.list;
-        this.todoList.splice(delNum, 1);
+        this.todoList.splice(delNum, currIdx);
       } else {
         return false;
       }
