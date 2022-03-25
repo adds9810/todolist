@@ -3,7 +3,8 @@ const currIdx = 1;
 
 const App = {
   init() {
-    this.todoList = [];
+    let todoLocalData = JSON.parse(localStorage.getItem('todoList'));
+    this.todoList = todoLocalData.length == 0 ? [] : todoLocalData;
     this.selectorCache();
     this.initEvent();
   },
@@ -28,6 +29,7 @@ const App = {
     return this.onDraw();
   },
   initEvent() {
+    this.onDraw();
     this.btn.addEventListener('click', this.createTodo.bind(this));
     this.inputArea.addEventListener('keyup', this.keyup.bind(this));
     this.allDelBtn.addEventListener('click', this.deleteAll.bind(this));
@@ -45,17 +47,18 @@ const App = {
     let clickEditBtn = clickTargetClass.contains('btn-edit');
     let clickDelBtn = clickTargetClass.contains('btn-delete');
     let clickChk = eElm.classList.contains('form-check-input');
-    let targetNum = clickTarget.parentNode.parentNode.dataset.list;
+    let clickTargetData = clickTarget.parentNode.parentNode.dataset;
+    let targetList = clickTargetData.list;
     if (clickEditBtn) {
       clickTargetClass.contains('btn-primary')
-        ? this.editTodo(targetNum)
-        : this.setEditTodo(targetNum);
+        ? this.editTodo(targetList)
+        : this.setEditTodo(targetList);
     } else if (clickDelBtn) {
       clickTargetClass.contains('btn-secondary')
-        ? this.delTodo(targetNum)
-        : this.cancelEdit(targetNum);
+        ? this.delTodo(targetList)
+        : this.cancelEdit(targetList);
     } else if (clickChk) {
-      this.checkTodo(targetNum, eElm.checked);
+      this.checkTodo(targetList, eElm.checked);
     }
   },
   keyup() {
@@ -81,11 +84,35 @@ const App = {
   },
   onDraw() {
     let todoHtml = '';
-    for (let i = 0; i < this.todoList.length; i++) {
+    let todoLeng = this.todoList.length;
+    for (let i = 0; i < todoLeng; i++) {
       todoHtml += this.todoTemplete(i);
     }
+    if (todoLeng > 1) {
+      todoHtml += this.allChkbox();
+    }
     this.todoArea.innerHTML = todoHtml;
+    localStorage.clear();
+    localStorage.setItem('todoList', JSON.stringify(this.todoList));
+    console.log(localStorage.getItem('todoList'));
     return MESSAGES['getCompleteTxt'];
+  },
+  allChkbox() {
+    let checkVal;
+    for (let i = 0; i < this.todoList.length; i++) {
+      if (this.todoList[i]['complete'] == true) {
+        checkVal = 'checked';
+      } else {
+        checkVal = '';
+        break;
+      }
+    }
+    return `<div class="row" data-list="allChk">
+    <label class="list-group-item d-flex gap-2">
+      <input class="form-check-input flex-shrink-0" type="checkbox" value="allChk" name="allChk" ${checkVal} >
+      전체완료
+    </label>
+   </div>`;
   },
   todoTemplete(i) {
     return `<div class="row" data-list="${i}">
@@ -136,15 +163,26 @@ const App = {
   checkTodo(num, value) {
     let chkNum = num;
     let chkVal = value;
-    let dataTxt = this.todoList[chkNum]['title'];
-    let datakTodo = this.todoList[chkNum]['complete'];
-    let chkValData = chkVal != datakTodo;
-    if (chkValData) {
-      this.changeData(chkNum, chkVal, dataTxt);
+    let dataTxt;
+    let datakTodo;
+
+    if (chkNum == 'allChk') {
+      for (let i = 0; i < this.todoList.length; i++) {
+        dataTxt = this.todoList[i]['title'];
+        //console.log(i, chkVal, dataTxt, this.todoList);
+        this.changeData(i, chkVal, dataTxt);
+      }
+    } else {
+      datakTodo = this.todoList[chkNum]['complete'];
+      dataTxt = this.todoList[chkNum]['title'];
+      let chkValData = chkVal != datakTodo;
+      if (chkValData) {
+        this.changeData(chkNum, chkVal, dataTxt);
+      }
     }
+
     //console.log(eElm.checked);
   },
-
   editTodo(num) {
     let editNum = num;
     let editRow = document.querySelectorAll(`.list-group .row`)[editNum];
@@ -183,7 +221,6 @@ const App = {
     }
   },
   delTodo(num) {
-    console.log('delect');
     let delNum = num;
     if (delNum == 'All') {
       //전체삭제
