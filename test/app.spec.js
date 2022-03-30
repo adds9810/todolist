@@ -9,14 +9,17 @@
 //     it('should return 1 when the value is 2', () => {
 //       assert.equal([1, 2, 3].indexOf(2), 1);
 //     });
-//   });
+//   });1
 // });
 
-import { todo, todoFun } from '../app.js';
+import App from '../app.js';
 import assert from 'assert';
+import MESSAGES from '../messages.js';
 
-describe('App test!', function () {
-  it('todo should return "complete"', function () {
-    assert.equal(todo(), 'todo complete');
+const testTxt = '입력된 할 일';
+
+describe('App init!', function () {
+  describe('createTodoApp', function () {
+    App.createTodo(testTxt);
   });
 });

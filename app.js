@@ -1,4 +1,4 @@
-import MESSAGES from '/messages.js';
+import MESSAGES from './messages.js';
 const currIdx = 1;
 
 const App = {
@@ -239,3 +239,5 @@ const App = {
 };
 
 App.init();
+
+export default App;
